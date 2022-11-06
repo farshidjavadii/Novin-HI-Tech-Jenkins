@@ -1,0 +1,46 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(name: 'BRANCH', defaultValue: 'master')
+
+        string(name: 'IMAGE', defaultValue: '')
+
+        choice(choices: ['discovery','gateway','user','bill','payment'],  name: 'PROJECT')
+
+    }
+
+    stages {
+        stage('SCM') {
+            steps {
+                script {
+                    switch("${params.PROJECT}") {
+                        case "discovery":
+                            gitRepo = 'https://github.com/technicallevelup/Novin-HI-Tech-Discovery.git'
+                            break
+                        case "gateway":
+                            gitRepo = 'https://github.com/technicallevelup/Novin-HI-Tech-Gateway.git'
+                            break
+                        case "user":
+                            gitRepo = 'https://github.com/technicallevelup/Novin-HI-Tech-User.git'
+                            break
+                        case "bill":
+                            gitRepo = 'https://github.com/technicallevelup/Novin-HI-Tech-Bill.git'
+                            break
+                        case "payment":
+                            gitRepo = 'https://github.com/technicallevelup/Novin-HI-Tech-Payment.git'
+                            break
+                    }
+                }
+                git branch: "${params.BRANCH}", url: gitRepo
+
+            }
+        }
+        stage('Build') {
+            steps {
+
+                sh "docker build . -t level_up/${params.PROJECT}-${params.IMAGE} --no-cache"
+            }
+        }
+    }
+}

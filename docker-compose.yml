@@ -1,0 +1,8 @@
+version: '2'
+
+services:
+  jenkins:
+    image: jenkins/jenkins:lts-jdk11
+    ports:
+      - '8181:8080'
+      - '50000:50000'
