@@ -1,0 +1,21 @@
+pipeline {
+    agent any
+
+    parameters {
+        choice(choices: ['discovery','gateway','user','bill','payment'],  name: 'PROJECT')
+
+    }
+
+    stages {
+        stage('Scale Service') {
+            steps {
+                script {
+                    timeout(time: 1, unit: 'MINUTES') {
+                        sh "docker service logs -f level_up_backend_${params.PROJECT} --tail=100"
+                    }
+                }
+            }
+        }
+    }
+}
+

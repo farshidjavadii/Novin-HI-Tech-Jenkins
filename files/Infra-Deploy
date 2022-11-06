@@ -1,0 +1,47 @@
+pipeline {
+    agent any
+
+    parameters {
+        choice(choices: ['mariadb','adminer','redis'],  name: 'PROJECT')
+
+    }
+
+    stages {
+        stage('Check Image/ Pull Image') {
+            steps {
+                script {
+                    try{
+                        sh "docker image inspect ${params.PROJECT}:latest"
+                    }catch(Exception e){
+                        sh "docker pull ${params.PROJECT}:latest"
+                    }
+                }
+            }
+        }
+        stage('Create Swarm'){
+            steps {
+                sh "docker swarm init | true"
+            }
+        }
+        stage('Create Network'){
+            steps {
+                sh "docker network create -d overlay level_up | true"
+            }
+        }
+        stage('Run Service') {
+            steps {
+                script {
+                    if("${params.PROJECT}" == "mariadb"){
+                        sh "docker service create --replicas 1 --name=level_up_infra_mariadb --env 'MYSQL_ROOT_PASSWORD=root' --publish published=3306,target=3306 --network=level_up mariadb:latest"
+                    }
+                    if("${params.PROJECT}" == "adminer"){
+                        sh "docker service create --replicas 1 --name=level_up_infra_adminer  --publish published=8083,target=8080 --network=level_up adminer:latest"
+                    }
+                    if("${params.PROJECT}" == "redis"){
+                        sh "docker service create --replicas 1 --name=level_up_infra_redis  --publish published=6379,target=6379 --network=level_up redis:latest"
+                    }
+                }
+            }
+        }
+    }
+}

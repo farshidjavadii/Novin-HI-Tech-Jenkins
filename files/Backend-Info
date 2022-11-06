@@ -1,0 +1,19 @@
+pipeline {
+    agent any
+
+    parameters {
+        choice(choices: ['discovery','gateway','user','bill','payment'],  name: 'PROJECT')
+
+    }
+
+    stages {
+        stage('Scale Service') {
+            steps {
+                script {
+                    sh "docker service inspect level_up_backend_${params.PROJECT}"
+                }
+            }
+        }
+    }
+}
+

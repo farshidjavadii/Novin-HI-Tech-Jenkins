@@ -1,0 +1,20 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(name: 'REPLICAS')
+        choice(choices: ['discovery','gateway','user','bill','payment'],  name: 'PROJECT')
+
+    }
+
+    stages {
+        stage('Scale Service') {
+            steps {
+                script {
+                    sh "docker service scale level_up_backend_${params.PROJECT}=${params.REPLICAS}"
+                }
+            }
+        }
+    }
+}
+

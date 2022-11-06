@@ -39,7 +39,7 @@ pipeline {
         stage('Build') {
             steps {
 
-                sh "docker build . -t level_up/${params.PROJECT}-${params.IMAGE} --no-cache"
+                sh "docker build . -t level_up/${params.PROJECT}:${params.IMAGE} --no-cache"
             }
         }
     }

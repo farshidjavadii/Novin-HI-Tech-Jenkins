@@ -1,0 +1,40 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(name: 'IMAGE')
+        string(name: 'PORT')
+        choice(choices: ['discovery','gateway','user','bill','payment'],  name: 'PROJECT')
+
+    }
+
+    stages {
+        stage('Check Image/ Pull Image') {
+            steps {
+                sh "docker image inspect level_up/${params.PROJECT}:${params.IMAGE}"
+            }
+        }
+        stage('Create Swarm'){
+            steps {
+                sh "docker swarm init | true"
+            }
+        }
+        stage('Create Network'){
+            steps {
+                sh "docker network create -d overlay level_up | true"
+            }
+        }
+        stage('Run Service') {
+            steps {
+                script {
+                    try{
+                        sh "docker service create --replicas 1 --name=level_up_backend_${params.PROJECT}  --publish published=${params.PORT},target=${params.PORT} --network=level_up level_up/${params.PROJECT}:${params.IMAGE}"
+                    }catch (Exception e){
+                        sh "docker service update --image level_up/${params.PROJECT}:${params.IMAGE} level_up_backend_${params.PROJECT}"
+                    }
+                }
+            }
+        }
+    }
+}
+
