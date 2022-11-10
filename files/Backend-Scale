@@ -11,7 +11,7 @@ pipeline {
         stage('Scale Service') {
             steps {
                 script {
-                    sh "docker service scale level_up_backend_${params.PROJECT}=${params.REPLICAS}"
+                    sh "docker service scale level_up_${params.PROJECT}=${params.REPLICAS}"
                 }
             }
         }
