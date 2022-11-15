@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     parameters {
-        choice(choices: ['mariadb','adminer','redis'],  name: 'PROJECT')
+        choice(choices: ['mariadb','adminer','redis','elasticsearch','kibana','apm','filebeat','logstash'],  name: 'PROJECT')
 
     }
 
@@ -25,7 +25,7 @@ pipeline {
         }
         stage('SCM') {
             steps {
-                git branch: "APM", url: 'https://github.com/technicallevelup/Novin-HI-Tech-Swarm.git'
+                git branch: "master", url: 'https://github.com/technicallevelup/Novin-HI-Tech-Swarm.git'
             }
         }
         stage('Deploy'){
