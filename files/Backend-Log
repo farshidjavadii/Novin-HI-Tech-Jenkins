@@ -11,7 +11,7 @@ pipeline {
             steps {
                 script {
                     timeout(time: 1, unit: 'MINUTES') {
-                        sh "docker service logs -f level_up_backend_${params.PROJECT} --tail=100"
+                        sh "docker service logs -f level_up_${params.PROJECT} --tail=100"
                     }
                 }
             }
